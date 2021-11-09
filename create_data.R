@@ -41,7 +41,7 @@ all_transfers_prov<-complete_series %>%
       select(-Region) %>% 
       spread(Variable,Value) %>%
       select(Year,
-             Prices=`Canada-Wide CPI (2020=100)`,
+             Prices=`Canada-Wide CPI (2021=100)`,
              GDP=`Nominal GDP (Millions)`),
     by="Year"
   ) %>%
@@ -69,8 +69,8 @@ all_transfers_prov<-complete_series %>%
   select(Year,Province,percapita,realPC,shareGDP,real,nom,shareGDP_prov) %>%
   gather(Units,Value,-Year,-Province) %>%
   mutate(Units=ifelse(Units=="percapita","Dollars Per Capita ($)",Units),
-         Units=ifelse(Units=="realPC","Real Dollars Per Capita ($ 2020)",Units),
-         Units=ifelse(Units=="real","Real Dollars (Millions, $ 2020)",Units),
+         Units=ifelse(Units=="realPC","Real Dollars Per Capita ($ 2021)",Units),
+         Units=ifelse(Units=="real","Real Dollars (Millions, $ 2021)",Units),
          Units=ifelse(Units=="nom","Nominal Dollars (Millions)",Units),
          Units=ifelse(Units=="shareGDP","Share of Canada's GDP",Units),
          Units=ifelse(Units=="shareGDP_prov","Share of Provincial GDP",Units)) %>%
