@@ -41,7 +41,7 @@ all_transfers_prov<-complete_series %>%
       select(-Region) %>% 
       spread(Variable,Value) %>%
       select(Year,
-             Prices=`Canada-Wide CPI (2021=100)`,
+             Prices=`Canada-Wide CPI (2020=100)`,
              GDP=`Nominal GDP (Millions)`),
     by="Year"
   ) %>%
@@ -65,12 +65,25 @@ all_transfers_prov<-complete_series %>%
          nom=Value,
          percapita=1000000*Value/pop,
          shareGDP=Value/GDP,
-         shareGDP_prov=Value/provGDP) %>%
+         shareGDP_prov=Value/provGDP)
+
+# Create an "All Provinces" aggregate
+all_transfers_total<-all_transfers_prov %>%
+  group_by(Year) %>%
+  summarise(percapita=weighted.mean(percapita,pop),
+            realPC=weighted.mean(realPC,pop),
+            shareGDP=sum(shareGDP),
+            real=sum(real),
+            nom=sum(nom)) %>%
+  mutate(shareGDP_prov=shareGDP,
+         Province="All Provinces")
+all_transfers_prov<-all_transfers_prov %>%
   select(Year,Province,percapita,realPC,shareGDP,real,nom,shareGDP_prov) %>%
+  rbind(all_transfers_total) %>%
   gather(Units,Value,-Year,-Province) %>%
   mutate(Units=ifelse(Units=="percapita","Dollars Per Capita ($)",Units),
-         Units=ifelse(Units=="realPC","Real Dollars Per Capita ($ 2021)",Units),
-         Units=ifelse(Units=="real","Real Dollars (Millions, $ 2021)",Units),
+         Units=ifelse(Units=="realPC","Real Dollars Per Capita ($ 2020)",Units),
+         Units=ifelse(Units=="real","Real Dollars (Millions, $ 2020)",Units),
          Units=ifelse(Units=="nom","Nominal Dollars (Millions)",Units),
          Units=ifelse(Units=="shareGDP","Share of Canada's GDP",Units),
          Units=ifelse(Units=="shareGDP_prov","Share of Provincial GDP",Units)) %>%
